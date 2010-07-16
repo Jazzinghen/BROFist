@@ -12,9 +12,11 @@ struct bro_bt_device{
     bdaddr_t   mac;
 };
 
-int bro_bt_connect_device (int * spam_sock, sockaddr_rc * addr_data,
-                        bdaddr_t mac_addr)
+int bro_bt_connect_device (int * spam_sock, bdaddr_t mac_addr)
 {
+
+    struct sockaddr_rc addr_data = { 0 };
+    
     /* AF_BLUETOOTH means that it's a Bluetooth socket, while BTPROTO_RFCOMM
     * means that we are going to use the RFCOMM protocol to get the data.
     */
@@ -30,9 +32,9 @@ int bro_bt_connect_device (int * spam_sock, sockaddr_rc * addr_data,
     * communication family, the RFCOMM channel and the MAC address :3
     * In here we set all this data. Fuck yea.
     */ 
-    addr_data->rc_family   = AF_BLUETOOTH;
-    addr_data->rc_channel  = (uint8_t) 1;
-    addr_data->rc_bdaddr   = mac_addr;
+    addr_data.rc_family   = AF_BLUETOOTH;
+    addr_data.rc_channel  = (uint8_t) 1;
+    addr_data.rc_bdaddr   = mac_addr;
 
     // Let's connect to SPAM!
     connect_status = connect(spam_sock, (struct sockaddr *)addr_data,

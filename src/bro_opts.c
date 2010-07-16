@@ -74,6 +74,7 @@ int opts_parse (bro_opts_t *so, int argc, char * const argv[])
     bro_bt_device_t devices[MAX_BT_DEVICES];
     size_t ndevs;
     int dev_id;
+    int i;
 
     ndevs = bt_scan_devices(devices);
     devices[ndevs] = NULL;
@@ -96,8 +97,12 @@ int opts_parse (bro_opts_t *so, int argc, char * const argv[])
                 so->mac = devices[dev_id].mac;
                 break;
             case 'l':
-                // TODO Output List of Devices in range
-                break;
+                fprintf(stderr, "Bluetooth Devices in Range:\n\n");
+                for (i = 0; i < ndevs; i++) {
+                    fprintf(stderr, "%d: %s [%s]\n", i+1, devices[i].name,
+                            ba2str(devices[i].mac));
+                };
+                return -1;
             case 'h':
             case '?':
                 print_help(argv[0]);

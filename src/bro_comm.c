@@ -1,8 +1,12 @@
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+
+#include "headers/bro_comm.h"
+
 
 #define SERVER_PATH         "/tmp/BROFist"
 #define BRO_MAX_CONNECTIONS 1
@@ -22,11 +26,11 @@ int bro_start_server (int * server_sock, int * client_sock)
     }
 
     // Now we'll get a unique name for our server binding the socket
-    memset(&serveraddr, 0, sizeof(serveraddr));
-    serveraddr.sun_family = AF_UNIX;
-    strcpy(serveraddr.sun_path, SERVER_PATH);
+    memset(&bro_server, 0, sizeof(bro_server));
+    bro_server.sun_family = AF_UNIX;
+    strcpy(bro_server.sun_path, SERVER_PATH);
 
-    rc = bind(*server_sock, (struct sockaddr *)&serveraddr, SUN_LEN(&serveraddr));
+    rc = bind(*server_sock, (struct sockaddr *)&bro_server, SUN_LEN(&bro_server));
     if (rc < 0)
     {
      perror("bind() failed");
@@ -66,10 +70,14 @@ int bro_start_server (int * server_sock, int * client_sock)
      perror("setsockopt(SO_RCVLOWAT) failed");
      return -1;
     }
+    
+    return 0;
 }
 
-int bro_server_fist (){
+int bro_server_fist (bro_fist_t * input_fist, bro_fist_t * out_fist, int scicos_sock){
 
+    int rc;
+    
     /*
      * TODO: Prendere in input socket di SciCos e dell'NXT ed implementare la    
      * comunicazione tra i due QUI dentro
@@ -78,30 +86,32 @@ int bro_server_fist (){
     /****************************************************/
     /* Receive that 250 bytes data from the client */
     /****************************************************/
-    rc = recv(*client_sock, buffer, sizeof(bro_fist_t), 0);
+    rc = recv(scicos_sock, out_fist, sizeof(bro_fist_t), 0);
     if (rc < 0)
     {
      perror("recv() failed");
-     break;
+     return -1;
     } 
     printf("%d bytes of data were received\n", rc);
     if (rc == 0 ||
-      rc < sizeof(buffer))
+      rc < sizeof(out_fist))
     {
      printf("The client closed the connection before all of the\n");
      printf("data was sent\n");
-     break;
+     return -1;
     }
 
     /********************************************************************/
     /* Echo the data back to the client                                 */
     /********************************************************************/
-    rc = send(*client_sock, buffer, sizeof(buffer), 0);
+    rc = send(scicos_sock, input_fist, sizeof(bro_fist_t), 0);
     if (rc < 0)
     {
      perror("send() failed");
-     break;
+     return -1;
     }
+    
+    return 0;
 
 }
 
@@ -119,4 +129,6 @@ int bro_stop_server (int server_sock, int client_sock){
    /* Remove the UNIX path name from the file system                      */
    /***********************************************************************/
    unlink(SERVER_PATH);
+   
+   return 0;
 }

@@ -2,25 +2,24 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <bluetooth/bluetooth.h>
-#include <bluetooth/rfcomm.h>
-#include <bluetooth/hci.h>
-#include <bluetooth/hci_lib.h>
+#include "headers/bro_bt.h"
 
-struct bro_bt_device{
-    char        name[248];
+struct bro_bt_device {
+    char       name[248];
     bdaddr_t   mac;
 };
 
 int bro_bt_connect_device (int * spam_sock, bdaddr_t mac_addr)
 {
 
+    int connect_status;    
+    
     struct sockaddr_rc addr_data = { 0 };
     
     /* AF_BLUETOOTH means that it's a Bluetooth socket, while BTPROTO_RFCOMM
     * means that we are going to use the RFCOMM protocol to get the data.
     */
-    spam_sock = socket (AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
+    *spam_sock = socket (AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
 
     /* As written on the official guide for the Bluetooth Libraries...
     * struct sockaddr_rc {
@@ -37,7 +36,7 @@ int bro_bt_connect_device (int * spam_sock, bdaddr_t mac_addr)
     addr_data.rc_bdaddr   = mac_addr;
 
     // Let's connect to SPAM!
-    connect_status = connect(spam_sock, (struct sockaddr *)addr_data,
+    connect_status = connect(*spam_sock, (struct sockaddr *)&addr_data,
                            sizeof(addr_data));
 
     return connect_status;
@@ -47,7 +46,7 @@ size_t bro_bt_scan_devices (bro_bt_device_t *devices[MAX_BT_DEVICES])
 {
     inquiry_info *scan_res = NULL;
     size_t num_rsp;
-    int dev_id, sock, len, flags;
+    int dev_id, sock, flags;
     int i;
     char addr[19] = { 0 };
     char name[248] = { 0 };
@@ -69,7 +68,8 @@ size_t bro_bt_scan_devices (bro_bt_device_t *devices[MAX_BT_DEVICES])
     scan_res = (inquiry_info*)malloc(MAX_BT_DEVICES * sizeof(inquiry_info));
     
     // Scan to find all the devices in range
-    num_rsp = hci_inquiry(dev_id, BT_INQUIRY_LEN, max_rsp, NULL, &scan_res, flags);
+    num_rsp = hci_inquiry(dev_id, BT_INQUIRY_LEN, MAX_BT_DEVICES, NULL,
+                          &scan_res, flags);
     if( num_rsp < 0 ) perror("hci_inquiry");
 
     // For each of the found devices we retrieve its name
@@ -79,16 +79,17 @@ size_t bro_bt_scan_devices (bro_bt_device_t *devices[MAX_BT_DEVICES])
       if (hci_read_remote_name(sock, &scan_res[i].bdaddr, sizeof(name), 
           name, 0) < 0)
       strcpy(name, "[unknown]");
-      devices[i]->name = strdup(name);      // todo FREE on devices elements
+      //devices[i]->name = strdup(name);      // todo FREE on devices elements
+      strcpy(devices[i]->name, name);
       devices[i]->mac = scan_res[i].bdaddr;
     }
 
     free( scan_res );
     close( sock );
-    return num_risp;
+    return num_rsp;
 }
 
 int bro_bt_close_connection (int spam_sock)
 {
-    close(*spam_sock);
+    return close(spam_sock);
 }

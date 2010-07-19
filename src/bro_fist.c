@@ -1,3 +1,6 @@
+#include "headers/bro_fist.h"
+#include "headers/bro_comm.h"
+#include "headers/bro_opts.h"
 
 #define BRO_END_COMMUNICATION 255
 
@@ -8,9 +11,9 @@ main (int argc, char *argv[])
     int bro_client_socket = -1;
     int spam_socket = -1;
     
-    bro_opts_t options = { 0 };
+    bro_opts_t options;
     
-    if (opts_parse (options, argc, argv) == -1) {
+    if (opts_parse (&options, argc, argv) == -1) {
         return 0;
     };
     

@@ -1,6 +1,10 @@
 #ifndef __bro_headers_fist_h
 #define __bro_headers_fist_h
 
+#include <stdint.h>
+
+
+
 typedef struct {
     uint16_t size;
     uint8_t operation;
@@ -9,3 +13,5 @@ typedef struct {
         float   real_data;
     } data;
 } __attribute__((__packed__)) bro_fist_t;
+
+#endif 

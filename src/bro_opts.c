@@ -6,6 +6,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
+
 extern char *optarg;
 extern int optind, opterr, optopt;
 
@@ -20,7 +21,7 @@ static const struct option longopts[] = {
 };
 
 static const char help [] =
-"\n" PACKAGE_STRING "\n"
+"\n" "BROFist Server" "\n"
 "Usage: %s [options]\n\n"
 "Available options\n\n"
 "  --mac={mac_address} | -m {mac_address}\n"
@@ -59,8 +60,8 @@ int check_optarg (const char *arg, bro_bt_device_t * target[])
 {
     int id = 0;
 
-    while (target[id]) {
-        if (strcmp(target[id], arg) == 0) {
+    while (target[id]->name) {
+        if (strcmp(target[id]->name, arg) == 0) {
             return id;
         }
         id ++;
@@ -71,14 +72,12 @@ int check_optarg (const char *arg, bro_bt_device_t * target[])
 int opts_parse (bro_opts_t *so, int argc, char * const argv[])
 {
     int opt;
-    bro_bt_device_t devices[MAX_BT_DEVICES];
+    bro_bt_device_t * devices[MAX_BT_DEVICES];
     size_t ndevs;
     int dev_id;
     int i;
-
-    ndevs = bt_scan_devices(devices);
-    devices[ndevs] = NULL;
-
+    char conv_mac[18];
+    
     while ((opt = getopt_long(argc, argv, optstring, longopts, NULL)) != -1)
     {
         switch (opt) {
@@ -88,19 +87,22 @@ int opts_parse (bro_opts_t *so, int argc, char * const argv[])
                 }
                 break;
             case 's':
+                ndevs = bro_bt_scan_devices(devices);
                 dev_id = check_optarg(optarg, devices);
                 if (dev_id < 0) {
                     fprintf(stderr, "Il device %s non esiste o non è in\
                             range\n", optarg);
                     return -1;
                 }
-                so->mac = devices[dev_id].mac;
+                so->mac = devices[dev_id]->mac;
                 break;
             case 'l':
+                ndevs = bro_bt_scan_devices(devices);
                 fprintf(stderr, "Bluetooth Devices in Range:\n\n");
                 for (i = 0; i < ndevs; i++) {
-                    fprintf(stderr, "%d: %s [%s]\n", i+1, devices[i].name,
-                            ba2str(devices[i].mac));
+                    ba2str(&devices[i]->mac, conv_mac);
+                    fprintf(stderr, "%d: %s [%s]\n", i+1, devices[i]->name,
+                            conv_mac);
                 };
                 return -1;
             case 'h':

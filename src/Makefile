@@ -1,6 +1,6 @@
 .PHONY : all clean
 
-CFLAGS := -Wall -std=gnu99 -D_GNU_SOURCE
+CFLAGS := -Wall -std=gnu99 -D_GNU_SOURCE -lbluetooth
 DIRS := $(shell find . -type d)
 FILES := $(foreach dir, $(DIRS), $(wildcard $(dir)/*.c))
 OBJS := $(addsuffix .o, $(basename $(FILES)))

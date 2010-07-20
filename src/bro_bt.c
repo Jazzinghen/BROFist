@@ -77,11 +77,13 @@ size_t bro_bt_scan_devices (bro_bt_device_t *devices[MAX_BT_DEVICES])
       ba2str(&scan_res[i].bdaddr, addr);
       memset(name, 0, sizeof(name));
       if (hci_read_remote_name(sock, &scan_res[i].bdaddr, sizeof(name), 
-          name, 0) < 0)
-      strcpy(name, "[unknown]");
+          name, 0) < 0) {
+        strcpy(name, "[unknown]");
+      };
       //devices[i]->name = strdup(name);      // todo FREE on devices elements
+      devices[i] = malloc(sizeof(bro_bt_device_t));
       strcpy(devices[i]->name, name);
-      devices[i]->mac = scan_res[i].bdaddr;
+      memcpy (&devices[i]->mac, &scan_res[i].bdaddr, sizeof(bdaddr_t));
     }
 
     free( scan_res );

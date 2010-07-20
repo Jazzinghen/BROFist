@@ -4,6 +4,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <assert.h>
 
 #include "headers/bro_comm.h"
 
@@ -78,23 +79,21 @@ int bro_server_fist (bro_fist_t * input_fist, bro_fist_t * out_fist, int scicos_
 
     int rc;
     
+    assert(scicos_sock >= 0);
+    
     /*
      * TODO: Prendere in input socket di SciCos e dell'NXT ed implementare la    
      * comunicazione tra i due QUI dentro
      */
      
-    /****************************************************/
-    /* Receive that 250 bytes data from the client */
-    /****************************************************/
-    rc = recv(scicos_sock, out_fist, sizeof(bro_fist_t), 0);
+    rc = recv(scicos_sock, input_fist, sizeof(bro_fist_t), 0);
     if (rc < 0)
     {
      perror("recv() failed");
      return -1;
     } 
-    printf("%d bytes of data were received\n", rc);
-    if (rc == 0 ||
-      rc < sizeof(out_fist))
+    
+    if (rc == 0 || rc < sizeof(bro_fist_t))
     {
      printf("The client closed the connection before all of the\n");
      printf("data was sent\n");
@@ -104,7 +103,7 @@ int bro_server_fist (bro_fist_t * input_fist, bro_fist_t * out_fist, int scicos_
     /********************************************************************/
     /* Echo the data back to the client                                 */
     /********************************************************************/
-    rc = send(scicos_sock, input_fist, sizeof(bro_fist_t), 0);
+    rc = send(scicos_sock, out_fist, sizeof(bro_fist_t), 0);
     if (rc < 0)
     {
      perror("send() failed");

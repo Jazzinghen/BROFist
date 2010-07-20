@@ -13,9 +13,12 @@
 #define MAX_BT_DEVICES 255
 #define BT_INQUIRY_LEN 8
 
-typedef struct bro_bt_device bro_bt_device_t;
+typedef struct {
+    char       name[248];
+    bdaddr_t   mac;
+} bro_bt_device_t;
 
-size_t bro_bt_scan_devices (bro_bt_device_t *devices[MAX_BT_DEVICES]);
+size_t bro_bt_scan_devices (bro_bt_device_t * devices[MAX_BT_DEVICES]);
 
 int bro_bt_connect_device (int * spam_sock, bdaddr_t mac_addr);
                         

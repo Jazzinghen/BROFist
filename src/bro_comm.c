@@ -8,9 +8,7 @@
 
 #include "headers/bro_comm.h"
 
-
-#define SERVER_PATH         "/tmp/BROFist"
-#define BRO_MAX_CONNECTIONS 1
+#define BRO_MAX_CONNECTIONS     1
 
 int bro_start_server (int * server_sock, int * client_sock)
 {
@@ -75,11 +73,12 @@ int bro_start_server (int * server_sock, int * client_sock)
     return 0;
 }
 
-int bro_server_fist (bro_fist_t * input_fist, bro_fist_t * out_fist, int scicos_sock){
+int bro_server_fist (bro_fist_t * input_fist, bro_fist_t * out_fist,
+                     int scicos_sock, int spam_sock){
 
     int rc;
     
-    assert(scicos_sock >= 0);
+    assert(scicos_sock >= 0 && spam_sock >= 0);
     
     /*
      * TODO: Prendere in input socket di SciCos e dell'NXT ed implementare la    

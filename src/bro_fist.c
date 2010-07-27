@@ -15,7 +15,7 @@ main (int argc, char *argv[])
     bro_opts_t options;
     
     
-    if (opts_parse (&options, argc, argv) == -1) {
+    if (bro_opts_parse (&options, argc, argv) == -1) {
         return 0;
     };
     

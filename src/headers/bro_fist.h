@@ -1,9 +1,11 @@
 #ifndef __bro_headers_fist_h
 #define __bro_headers_fist_h
 
+
 #include <stdint.h>
 
-
+#define SERVER_PATH     "/tmp/BROFist"
+#define BUFFER_SIZE     7
 
 typedef struct {
     uint16_t size;

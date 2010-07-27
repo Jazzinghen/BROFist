@@ -69,7 +69,7 @@ int check_optarg (const char *arg, bro_bt_device_t * target[])
     return -1;
 }
 
-int opts_parse (bro_opts_t *so, int argc, char * const argv[])
+int bro_opts_parse (bro_opts_t *so, int argc, char * const argv[])
 {
     int opt;
     bro_bt_device_t * devices[MAX_BT_DEVICES];

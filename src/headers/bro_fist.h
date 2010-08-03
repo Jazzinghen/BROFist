@@ -3,17 +3,41 @@
 
 
 #include <stdint.h>
+#include <stdlib.h>
+#include <time.h>
 
+// Definitions for the Cient-Server model
 #define SERVER_PATH     "/tmp/BROFist"
 #define BUFFER_SIZE     7
+
+// Definitions for Ports
+#define MOTOR_A         5
+#define MOTOR_B         6
+#define MOTOR_C         7
+
+#define PORT_1          1
+#define PORT_2          2
+#define PORT_3          3
+#define PORT_4          4
+
+// Definitions for operations
+#define LIGHT_SENSOR    1
+#define TOUCH_SENSOR    2
+#define SOUND_SENSOR    3
+#define RADAR_SENSOR    4
+
+#define TACHO_COUNT     6   // Get RAW Tacho count from Motor
+#define AVG_SPEED       7   // Get Average Speed as computed by the Client
+
+#define SET_SPEED       8   // Set speed to be computed by the PID on the NXT
+#define SET_POWER       9   // Set RAW power for the Motor
+
 
 typedef struct {
     uint16_t size;
     uint8_t operation;
-    union {
-        int32_t int_data;
-        float   real_data;
-    } data;
+    uint8_t port;
+    float data;
 } __attribute__((__packed__)) bro_fist_t;
 
 #endif 

@@ -23,6 +23,7 @@ void bro_sensor_enc_run (scicos_block *block)
     block->outptr[0][0] = 1;
     block->outptr[0][1] = block->ipar[0];
     block->outptr[0][2] = block->ipar[1];
+    block->outptr[0][3] = 0;
 }
 
 

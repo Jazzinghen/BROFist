@@ -5,10 +5,24 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <assert.h>
+#include <signal.h>
 
 #include "headers/bro_comm.h"
 
 #define BRO_MAX_CONNECTIONS     1
+
+static
+void remove_socket (int sig)
+{
+   unlink(SERVER_PATH);
+   exit(EXIT_FAILURE);
+}
+
+static
+void enable_cleanup ()
+{
+   signal(SIGINT, remove_socket);
+}
 
 int bro_start_server (int * server_sock, int * client_sock)
 {
@@ -36,6 +50,8 @@ int bro_start_server (int * server_sock, int * client_sock)
      return -1;
     }
 
+    enable_cleanup();
+
     // We'll listen to connections up to a max of BRO_MAX_CONNECTIONS
     rc = listen(*server_sock, BRO_MAX_CONNECTIONS);
     if (rc< 0)
@@ -61,7 +77,7 @@ int bro_start_server (int * server_sock, int * client_sock)
     /* We will use the SO_RCVLOWAT socket option to specify that we don't want 
      * recv() to wake up until all sizeof(bro_fist_t) of data have arrived.
      */
-    length = sizeof(bro_fist_t);
+    length = sizeof(bro_fist_t) * BUFFER_SIZE;
     rc = setsockopt(*client_sock, SOL_SOCKET, SO_RCVLOWAT,
                                       (char *)&length, sizeof(length));
     if (rc < 0)
@@ -74,18 +90,18 @@ int bro_start_server (int * server_sock, int * client_sock)
 }
 
 int bro_server_fist (bro_fist_t * input_fist, bro_fist_t * out_fist,
-                     int scicos_sock, int spam_sock){
+                     int scicos_sock){
 
-    int rc;
+    int rc, i;
     
-    assert(scicos_sock >= 0 && spam_sock >= 0);
+    assert(scicos_sock >= 0/* && spam_sock >= 0*/);
     
     /*
      * TODO: Prendere in input socket di SciCos e dell'NXT ed implementare la    
      * comunicazione tra i due QUI dentro
      */
      
-    rc = recv(scicos_sock, input_fist, sizeof(bro_fist_t), 0);
+    rc = recv(scicos_sock, input_fist, sizeof(bro_fist_t) * BUFFER_SIZE, 0);
     if (rc < 0)
     {
      perror("recv() failed");
@@ -98,11 +114,17 @@ int bro_server_fist (bro_fist_t * input_fist, bro_fist_t * out_fist,
      printf("data was sent\n");
      return -1;
     }
-
+    
+    memcpy(out_fist, input_fist, sizeof(bro_fist_t) * BUFFER_SIZE);
+    
+    for (i = 0; i < BUFFER_SIZE; i++) {
+        out_fist[i].data = (float)((rand() % 10) + 1.0);
+    }
+    
     /********************************************************************/
     /* Echo the data back to the client                                 */
     /********************************************************************/
-    rc = send(scicos_sock, out_fist, sizeof(bro_fist_t), 0);
+    rc = send(scicos_sock, out_fist, sizeof(bro_fist_t) * BUFFER_SIZE, 0);
     if (rc < 0)
     {
      perror("send() failed");

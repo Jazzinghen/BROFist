@@ -222,7 +222,8 @@ int bro_sens_read (scicos_block *block)
     for (i = 0; i < block->nout; i++) {
         printf("Next Step defining outputs :D [%i]\n", i);
         bro_decode_sci_datablock(&packet[i], &block->outptr[i][0]);
-        printf("Output value for port %i is: %.2f\n", i, block->outptr[i][0]);
+        printf("Output value for port %i is: %.2f[%i]\n", i, block->outptr[i][0], block->outsz[(2*block->nout)+i]);
+        
     }
     
     return 0;

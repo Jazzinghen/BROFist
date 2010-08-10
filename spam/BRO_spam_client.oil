@@ -76,7 +76,7 @@ CPU ATMEL_AT91SAM7S256
     	AUTOSTART = TRUE
     	{
       		ALARMTIME = 1;
-      		CYCLETIME = 5;
+      		CYCLETIME = 5;  // 5ms run time
       		APPMODE = appmode1;
     	};
   	};
@@ -91,22 +91,22 @@ CPU ATMEL_AT91SAM7S256
     	AUTOSTART = TRUE
     	{
       		ALARMTIME = 1;
-      		CYCLETIME = 5;
+      		CYCLETIME = 5;  // 5ms run time
       		APPMODE = appmode1;
     	};
   	};
   	
-  	ALARM BT_log_alarm
+  	ALARM BRO_Comm_alarm
   	{
     	COUNTER = SysTimerCnt;
     	ACTION = ACTIVATETASK
     	{
-      		TASK = BT_Logger;
+      		TASK = BRO_Comm;
     	};
     	AUTOSTART = TRUE
     	{
       		ALARMTIME = 1;
-      		CYCLETIME = 2;
+      		CYCLETIME = 2;  // 2ms run time
       		APPMODE = appmode1;
     	};
   	};
@@ -122,7 +122,7 @@ CPU ATMEL_AT91SAM7S256
     	AUTOSTART = TRUE
     	{
       		ALARMTIME = 1;
-      		CYCLETIME = 100;
+      		CYCLETIME = 100;    // 100ms run time
       		APPMODE = appmode1;
     	};
   	};

@@ -4,15 +4,24 @@
 #include "headers/BRO_spam_pid.h"
 
 
+#define     SEND_RECV   1
+#define     RECV_ONLY   0
+
 /*--------------------------------------------------------------------------*/
 /* OSEK declarations                                                        */
 /*--------------------------------------------------------------------------*/
 DeclareCounter(SysTimerCnt);
 DeclareResource(lcd);
-DeclareTask(BT_Logger);
+DeclareTask(BRO_Comm);
 DeclareTask(PID_Controller);
 DeclareTask(Speed_Updater);
 DeclareTask(DisplayTask);
+
+engines_t engines = {
+    {.port = NXT_PORT_A, .speed_control_type = NOT_USING, .speed_ref = 0},
+    {.port = NXT_PORT_B, .speed_control_type = NOT_USING, .speed_ref = 0},
+    {.port = NXT_PORT_C, .speed_control_type = NOT_USING, .speed_ref = 0}
+};
 
 /*--------------------------------------------------------------------------*/
 /* LEJOS OSEK hooks                                                         */
@@ -20,6 +29,8 @@ DeclareTask(DisplayTask);
 void ecrobot_device_initialize()
 {
     ecrobot_init_bt_slave("1234");
+    ecrobot_init_sonar_sensor(SONAR_PORT);
+    ecrobot_set_light_sensor_active(LIGHT_PORT);
 }
 
 
@@ -28,6 +39,9 @@ void ecrobot_device_terminate()
     nxt_motor_set_speed(NXT_PORT_A, 0, 1);
     nxt_motor_set_speed(NXT_PORT_B, 0, 1);
     nxt_motor_set_speed(NXT_PORT_C, 0, 1);
+        
+    ecrobot_set_light_sensor_inactive(LIGHT_PORT);
+    ecrobot_term_sonar_sensor(SONAR_PORT);
 
     ecrobot_term_bt_connection();
 }
@@ -124,9 +138,10 @@ TASK(Speed_Updater)
     TerminateTask();
 }
 
-TASK(BT_Logger)
+TASK(BRO_Comm)
 {
     U32 connect_status = 0;
+    U8 action = RECV_ONLY;
     
     /*  Declaring two buffers for communication */
     bro_fist_t in_packet[BUFFER_SIZE];
@@ -146,12 +161,14 @@ TASK(BT_Logger)
      *  No problem, with our drill we will pierce the Heavens!
      *  (And also with our BROFists, right?)
      */
-    connect_status = ecrobot_read_bt_packet(&in_packet, sizeof(bro_fist_t)*BUFFER_SIZE);
+    connect_status = ecrobot_read_bt_packet(in_packet, sizeof(bro_fist_t)*BUFFER_SIZE);
     
     // Se sono arrivati dei dati...
     if (connect_status > 0) {
-        
-        bt_send((U8*)&out_packet, sizeof(bro_fist_t)*BUFFER_SIZE);
+        // Decodifica ed elabora i pacchetti ricevuti
+        decode_bro_fists (in_packet, out_packet, &engines);
+        // Invia la risposta
+        bt_send((U8*)out_packet, sizeof(bro_fist_t)*BUFFER_SIZE);
     }
 
     TerminateTask();

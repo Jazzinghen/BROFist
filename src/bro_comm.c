@@ -90,7 +90,7 @@ int bro_start_server (int * server_sock, int * client_sock)
 }
 
 int bro_server_fist (bro_fist_t * input_fist, bro_fist_t * out_fist,
-                     int scicos_sock){
+                     int scicos_sock, int spam_sock){
 
     int rc, i;
     
@@ -114,6 +114,8 @@ int bro_server_fist (bro_fist_t * input_fist, bro_fist_t * out_fist,
      printf("data was sent\n");
      return -1;
     }
+    
+    bro_bt_client_fist (input_fist, out_fist, spam_sock);
     
     memcpy(out_fist, input_fist, sizeof(bro_fist_t) * BUFFER_SIZE);
     

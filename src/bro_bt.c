@@ -91,12 +91,17 @@ size_t bro_bt_scan_devices (bro_bt_device_t *devices[MAX_BT_DEVICES])
     return num_rsp;
 }
 
-/*int bro_bt_client_fist (bro_fist_t * input_fist, bro_fist_t * out_fist,
+int bro_bt_client_fist (bro_fist_t * input_fist, bro_fist_t * out_fist,
                         int spam_sock) {
+    
+    bro_spam_fists_t buffer;
+    
+    buffer.size = sizeof(bro_fist_t) * BUFFER_SIZE);
+    memcpy (buffer.packets, input_fist, ( sizeof(bro_fist_t) * BUFFER_SIZE));
                         
-    send(spam_sock, &debug_packet, sizeof(uint32_t)+2, 0));
-    recv(spam_sock, &packet_no, sizeof(uint32_t), 0));
-};*/
+    send(spam_sock, &buffer, sizeof(bro_spam_fists_t), 0);
+    recv(spam_sock, out_fist, ( sizeof(bro_fist_t) * BUFFER_SIZE ), 0);
+};
 
 int bro_bt_close_connection (int spam_sock)
 {

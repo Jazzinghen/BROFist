@@ -2,6 +2,8 @@
 #define __bro_headers_spam_fists_h
 #include "BRO_spam_client.h"
 
-void decode_bro_fists (bro_fist_t * orders, bro_fist_t * response, struct motors);
+void decode_bro_fists (const bro_fist_t * orders, bro_fist_t * response, engines_t * motors);
+
+
 
 #endif

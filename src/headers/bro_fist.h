@@ -34,10 +34,14 @@
 
 
 typedef struct {
-    uint16_t size;
     uint8_t operation;
     uint8_t port;
     float data;
 } __attribute__((__packed__)) bro_fist_t;
+
+typedef struct {
+    uint16_t size;
+    bro_fist_t packets[BUFFER_SIZE];
+} __attribute__((__packed__)) bro_spam_fists_t;
 
 #endif 

@@ -11,7 +11,7 @@ F32 avg(motor_t *mot);
 //  
 void update_speed (motor_t *mot);
 
-void update_errors (motor_t *mot, U32 spd_ref);
+void update_errors (motor_t *mot);
 
 void update_powers (motor_t *mot);
 

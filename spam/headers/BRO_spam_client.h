@@ -4,11 +4,11 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-
-#include "../src/headers/bro_fist.h"
 #include "kernel.h"
 #include "kernel_id.h"
 #include "ecrobot_interface.h"
+
+#include "../../src/headers/bro_fist.h"
 
 /*--------------------------------------------------------------------------*/
 /* Definitions                                                              */
@@ -70,14 +70,10 @@ typedef struct {
 
 } motor_t;
 
-struct {
-    motor_t first,
-    motor_t second,
-    motor_t third
-} engines = {
-    {.port = NXT_PORT_A, .speed_control_type = NOT_USING, .speed_ref = 0},
-    {.port = NXT_PORT_B, .speed_control_type = NOT_USING, .speed_ref = 0},
-    {.port = NXT_PORT_C, .speed_control_type = NOT_USING, .speed_ref = 0}
-};
+typedef struct {
+    motor_t first;
+    motor_t second;
+    motor_t third;
+} engines_t;
 
 #endif

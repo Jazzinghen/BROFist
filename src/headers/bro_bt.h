@@ -24,9 +24,9 @@ size_t bro_bt_scan_devices (bro_bt_device_t * devices[MAX_BT_DEVICES]);
 
 int bro_bt_connect_device (int * spam_sock, bdaddr_t mac_addr);
 
-/*int bro_bt_client_fist (bro_fist_t * input_fist, bro_fist_t * out_fist,
-                        int spam_sock);
- */                       
+int bro_bt_client_fist (bro_fist_t * input_fist, bro_fist_t * out_fist,
+                        int spam_sock);   
+                                            
 int bro_bt_close_connection (int spam_sock);
 
 #endif 

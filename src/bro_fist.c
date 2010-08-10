@@ -2,8 +2,6 @@
 #include "headers/bro_comm.h"
 #include "headers/bro_opts.h"
 
-#define BRO_END_COMMUNICATION 255
-
 int 
 main (int argc, char *argv[])
 {
@@ -17,6 +15,9 @@ main (int argc, char *argv[])
     
     bro_opts_t options;
     
+    memset (in_packet, 0, sizeof(bro_fist_t) * BUFFER_SIZE);
+    memset (out_packet, 0, sizeof(bro_fist_t) * BUFFER_SIZE);
+    
     srand ( time(NULL) );
     
     
@@ -24,9 +25,9 @@ main (int argc, char *argv[])
         return 0;
     };
     
-    bro_start_server (&bro_server_socket, &bro_client_socket);
-    
     bro_bt_connect_device (&bro_spam_socket, options.mac);
+    
+    bro_start_server (&bro_server_socket, &bro_client_socket);
     
     do {
         // TODO: Fare il loop di comunicazione con, magari, una word per il blocco

@@ -8,6 +8,7 @@
 #include <signal.h>
 
 #include "headers/bro_comm.h"
+#include "headers/bro_bt.h"
 
 #define BRO_MAX_CONNECTIONS     1
 
@@ -92,7 +93,7 @@ int bro_start_server (int * server_sock, int * client_sock)
 int bro_server_fist (bro_fist_t * input_fist, bro_fist_t * out_fist,
                      int scicos_sock, int spam_sock){
 
-    int rc, i;
+    int rc;
     
     assert(scicos_sock >= 0/* && spam_sock >= 0*/);
     
@@ -116,12 +117,6 @@ int bro_server_fist (bro_fist_t * input_fist, bro_fist_t * out_fist,
     }
     
     bro_bt_client_fist (input_fist, out_fist, spam_sock);
-    
-    memcpy(out_fist, input_fist, sizeof(bro_fist_t) * BUFFER_SIZE);
-    
-    for (i = 0; i < BUFFER_SIZE; i++) {
-        out_fist[i].data = (float)((rand() % 10) + 1.0);
-    }
     
     /********************************************************************/
     /* Echo the data back to the client                                 */

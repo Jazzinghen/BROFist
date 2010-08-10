@@ -141,7 +141,6 @@ TASK(Speed_Updater)
 TASK(BRO_Comm)
 {
     U32 connect_status = 0;
-    U8 action = RECV_ONLY;
     
     /*  Declaring two buffers for communication */
     bro_fist_t in_packet[BUFFER_SIZE];

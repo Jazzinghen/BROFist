@@ -96,11 +96,13 @@ int bro_bt_client_fist (bro_fist_t * input_fist, bro_fist_t * out_fist,
     
     bro_spam_fists_t buffer;
     
-    buffer.size = sizeof(bro_fist_t) * BUFFER_SIZE);
+    buffer.size = sizeof(bro_fist_t) * BUFFER_SIZE;
     memcpy (buffer.packets, input_fist, ( sizeof(bro_fist_t) * BUFFER_SIZE));
                         
     send(spam_sock, &buffer, sizeof(bro_spam_fists_t), 0);
     recv(spam_sock, out_fist, ( sizeof(bro_fist_t) * BUFFER_SIZE ), 0);
+    
+    return 0;
 };
 
 int bro_bt_close_connection (int spam_sock)

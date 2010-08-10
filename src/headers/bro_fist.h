@@ -9,6 +9,7 @@
 // Definitions for the Cient-Server model
 #define SERVER_PATH     "/tmp/BROFist"
 #define BUFFER_SIZE     7
+#define BRO_END_COMMUNICATION 255
 
 // Definitions for Ports
 #define MOTOR_A         5

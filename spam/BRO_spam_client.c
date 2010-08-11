@@ -4,9 +4,6 @@
 #include "headers/BRO_spam_pid.h"
 
 
-#define     SEND_RECV   1
-#define     RECV_ONLY   0
-
 /*--------------------------------------------------------------------------*/
 /* OSEK declarations                                                        */
 /*--------------------------------------------------------------------------*/
@@ -145,6 +142,9 @@ TASK(BRO_Comm)
     /*  Declaring two buffers for communication */
     bro_fist_t in_packet[BUFFER_SIZE];
     bro_fist_t out_packet[BUFFER_SIZE];
+    
+    memset (in_packet, 0, sizeof(bro_fist_t) * BUFFER_SIZE);
+    memset (out_packet, 0, sizeof(bro_fist_t) * BUFFER_SIZE);
 
     /*  As you might know we have a problem here... :3
      *  That problem is that the BT device installed on the AT91SAM7 seems to

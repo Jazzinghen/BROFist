@@ -7,6 +7,7 @@
 /**************************************************************************/
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -19,6 +20,7 @@
 #define SERVER_PATH      "/tmp/BROFist"
 #define BUFFER_LENGTH    250
 #define FALSE              0
+#define MSG_NUM 10000
 
 /* Pass in 1 parameter which is either the */
 /* path name of the server as a UNICODE    */
@@ -35,6 +37,10 @@ int main(int argc, char *argv[])
     struct sockaddr_un serveraddr;
     bro_fist_t out_packet[BUFFER_SIZE];
     bro_fist_t in_packet[BUFFER_SIZE];
+    time_t begin_trans, end_trans;
+    
+    memset (in_packet, 0, sizeof(bro_fist_t) * BUFFER_SIZE);
+    memset (out_packet, 0, sizeof(bro_fist_t) * BUFFER_SIZE);
 
     /***********************************************************************/
     /* A do/while(FALSE) loop is used to make error cleanup easier.  The   */
@@ -94,8 +100,16 @@ int main(int argc, char *argv[])
         out_packet[1].port = PORT_2;
         out_packet[2].operation = TOUCH_SENSOR;
         out_packet[2].port = PORT_3;
+        out_packet[3].operation = SOUND_SENSOR;
+        out_packet[3].port = PORT_4;
+        out_packet[4].operation = TACHO_COUNT;
+        out_packet[4].port = MOTOR_A;
+        out_packet[5].operation = TACHO_COUNT;
+        out_packet[5].port = MOTOR_B;
+        out_packet[6].operation = TACHO_COUNT;
+        out_packet[6].port = MOTOR_C;
 
-        do {
+        /*do {
             rc = send(sd, out_packet, sizeof(bro_fist_t) * BUFFER_SIZE, 0);
             if (rc < 0)
             {
@@ -121,7 +135,34 @@ int main(int argc, char *argv[])
                 printf("\tPort: %d\n", in_packet[i].port);
                 printf("\tData: %.2f\n\n", in_packet[i].data);
             }
-        } while (1);
+        } while (1);*/
+        
+        begin_trans = time(NULL);
+    
+        for (i = 0; i < MSG_NUM; i++) {
+            rc = send(sd, out_packet, sizeof(bro_fist_t) * BUFFER_SIZE, 0);
+            if (rc < 0)
+            {
+                perror("send() failed");
+                break;
+            }
+            
+
+            rc = recv(sd, in_packet, sizeof(bro_fist_t) * BUFFER_SIZE, 0);
+            if (rc < 0)
+            {
+                perror("recv() failed");
+                break;
+            }
+            if ((i % 100) == 0) {
+                printf ("Reached checkpoint: %i\n", i);
+            }
+        }
+    
+        end_trans = time (NULL);
+        
+        printf ("Ok, all done.\n");
+        printf ("Esitimated delay: %.2fms\n", (end_trans - begin_trans + 0.0)/MSG_NUM*1000);
 
         out_packet[0].operation = BRO_END_COMMUNICATION;
 

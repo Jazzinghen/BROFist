@@ -39,6 +39,9 @@ decode_bro_input (const bro_fist_t * input_packet, bro_fist_t * output_packet, e
 {
     U8 temp_port;
     
+    output_packet->port = input_packet->port;
+    output_packet->operation = input_packet->operation;
+    
     switch (input_packet->operation) {
         case LIGHT_SENSOR:
             decode_bro_port (input_packet->port, &temp_port);

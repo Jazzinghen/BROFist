@@ -6,12 +6,21 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
-
+/*  This is bad. As far as I know these are 4 global library variables needed
+ *  by getopt. We will leave these here.
+ */
 extern char *optarg;
 extern int optind, opterr, optopt;
 
+/*  This variable contains every option we might pass via command line and also 
+ *  if that option should have an argument or not (The ":" means that the
+ *  precedent option needs an argument).
+ */
 static const char optstring[] = "m:hls:";
 
+/*  This is almost the same as optstring[], but it contains the extended options
+ *  (The ones that can be called using "--" instead of "-") and what they mean.
+ */
 static const struct option longopts[] = {
     {"mac", 1, NULL, 'm'},            // MAC Address
     {"list-devices", 0, NULL, 'l'},   // BT Scan only? 
@@ -20,6 +29,7 @@ static const struct option longopts[] = {
     {NULL, 0, NULL, 0}
 };
 
+// The help description.
 static const char help [] =
 "\n" "BROFist Server" "\n"
 "Usage: %s [options]\n\n"
@@ -33,6 +43,10 @@ static const char help [] =
 "  --help  | -h\n"
 "        Print this help\n";
 
+/*  This function checks if a MAC address passed via command line is correct
+ *  and then converts it to a bdaddr_t for future uses. (Like the
+ *  bro_bt_connect_device)
+ */
 static
 int chk_mac_addr (char * target, bdaddr_t * mac) {
     

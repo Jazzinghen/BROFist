@@ -7,31 +7,31 @@
 #include <time.h>
 
 // Definitions for the Cient-Server model
-#define SERVER_PATH     "/tmp/BROFist"
-#define BUFFER_SIZE     7
-#define BRO_END_COMMUNICATION 255
+#define SERVER_PATH             "/tmp/BROFist"
+#define BUFFER_SIZE             7
+#define BRO_END_COMMUNICATION   255
 
 // Definitions for Ports
-#define MOTOR_A         5
-#define MOTOR_B         6
-#define MOTOR_C         7
+#define MOTOR_A                 5
+#define MOTOR_B                 6
+#define MOTOR_C                 7
 
-#define PORT_1          1
-#define PORT_2          2
-#define PORT_3          3
-#define PORT_4          4
+#define PORT_1                  1
+#define PORT_2                  2
+#define PORT_3                  3
+#define PORT_4                  4
 
 // Definitions for operations
-#define LIGHT_SENSOR    1
-#define TOUCH_SENSOR    2
-#define SOUND_SENSOR    3
-#define RADAR_SENSOR    4
+#define LIGHT_SENSOR            1
+#define TOUCH_SENSOR            2
+#define SOUND_SENSOR            3
+#define RADAR_SENSOR            4
 
-#define TACHO_COUNT     6   // Get RAW Tacho count from Motor
-#define AVG_SPEED       7   // Get Average Speed as computed by the Client
+#define TACHO_COUNT             6   // Get RAW Tacho count from Motor
+#define AVG_SPEED               7   // Get Average Speed as computed by the Client
 
-#define SET_SPEED       8   // Set speed to be computed by the PID on the NXT
-#define SET_POWER       9   // Set RAW power for the Motor
+#define SET_SPEED               8   // Set speed to be computed by the PID on the NXT
+#define SET_POWER               9   // Set RAW power for the Motor
 
 
 typedef struct {

@@ -1,3 +1,4 @@
+/** @file BRO_spam_pid.h */
 #ifndef __bro_headers_spam_pid_h
 #define __bro_headers_spam_pid_h
 #include "BRO_spam_client.h"

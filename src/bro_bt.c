@@ -4,10 +4,10 @@
 
 #include "headers/bro_bt.h"
 
-struct bro_bt_device {
+/*struct bro_bt_device {
     char       name[248];
     bdaddr_t   mac;
-};
+};*/
 
 int bro_bt_connect_device (int * spam_sock, bdaddr_t mac_addr)
 {
@@ -59,7 +59,7 @@ size_t bro_bt_scan_devices (bro_bt_device_t *devices[MAX_BT_DEVICES])
     
     if (dev_id < 0 || sock < 0) {
       perror("opening socket");
-      exit(1);
+      return -1;
     }
 
     memset(devices, 0, MAX_BT_DEVICES * sizeof(bro_bt_device_t *));
@@ -70,7 +70,10 @@ size_t bro_bt_scan_devices (bro_bt_device_t *devices[MAX_BT_DEVICES])
     // Scan to find all the devices in range
     num_rsp = hci_inquiry(dev_id, BT_INQUIRY_LEN, MAX_BT_DEVICES, NULL,
                           &scan_res, flags);
-    if( num_rsp < 0 ) perror("hci_inquiry");
+    if( num_rsp < 0 ) {
+        perror("hci_inquiry");
+        return -1;
+    }
 
     // For each of the found devices we retrieve its name
     for (i = 0; i < num_rsp; i++) {
@@ -95,14 +98,16 @@ int bro_bt_client_fist (bro_fist_t * input_fist, bro_fist_t * out_fist,
                         int spam_sock) {
     
     bro_spam_fists_t buffer;
+    size_t res;
     
     buffer.size = sizeof(bro_fist_t) * BUFFER_SIZE;
     memcpy (buffer.packets, input_fist, ( sizeof(bro_fist_t) * BUFFER_SIZE));
                         
-    send(spam_sock, &buffer, sizeof(bro_spam_fists_t), 0);
-    recv(spam_sock, out_fist, ( sizeof(bro_fist_t) * BUFFER_SIZE ), 0);
+    res = send(spam_sock, &buffer, sizeof(bro_spam_fists_t), 0);
+    if (res < 0) return res;
+    res = recv(spam_sock, out_fist, ( sizeof(bro_fist_t) * BUFFER_SIZE ), 0);
     
-    return 0;
+    return res;
 };
 
 int bro_bt_close_connection (int spam_sock)

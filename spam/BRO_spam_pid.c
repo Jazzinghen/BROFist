@@ -1,5 +1,14 @@
 #include "headers/BRO_spam_pid.h"
 
+// System Tune Defines for PID Controller
+
+#define K               0.8F        // Constant K for PID
+#define Kp              4.117F      // Constant Kp for PID
+#define Ki              15.98F      // Constant Ki for PID
+#define Kd              1           // Constant Kd for PID
+#define P1              40          //  
+#define T               0.005F      // Speed of a single reading (In seconds)
+
 /*
  * Power Saturation function. Simply limits the motors' powers to given upper
  * and lower limits.

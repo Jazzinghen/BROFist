@@ -174,7 +174,7 @@ void bro_comm_controller (scicos_block *block, int flag)
 		    bro_comm_init(block);
 	        break;
 		case 5:	/* ending */
-			bro_comm_kill(block);
+			//bro_comm_kill(block);
 			break;
 	    default:
 	        break;
@@ -184,15 +184,32 @@ void bro_comm_controller (scicos_block *block, int flag)
 int bro_sens_send (scicos_block *block)
 {
     int rc, i;
-    bro_fist_t packet[BUFFER_SIZE];
+    bro_fist_t out_packet[BUFFER_SIZE];
     
-    for (i = 1; i < block->nin; i++) {
+    /*for (i = 1; i < block->nin; i++) {
         bro_encode_sci_datablock(&packet[i-1], block->inptr[i]);
     };
     
     printf ("Data for first block: %i, %i, %.2f\n", packet[0].port, packet[0].operation, packet[0].data);
-    
-    rc = send(block->inptr[0][0], packet, sizeof(bro_fist_t) * BUFFER_SIZE, 0);
+    */
+
+
+        out_packet[0].operation = RADAR_SENSOR;
+        out_packet[0].port = PORT_1;
+        out_packet[1].operation = LIGHT_SENSOR;
+        out_packet[1].port = PORT_2;
+        out_packet[2].operation = TOUCH_SENSOR;
+        out_packet[2].port = PORT_3;
+        out_packet[3].operation = TOUCH_SENSOR;
+        out_packet[3].port = PORT_4;
+        out_packet[4].operation = TACHO_COUNT;
+        out_packet[4].port = MOTOR_A;
+        out_packet[5].operation = TACHO_COUNT;
+        out_packet[5].port = MOTOR_B;
+        out_packet[6].operation = TACHO_COUNT;
+        out_packet[6].port = MOTOR_C;
+
+    rc = send(block->inptr[0][0], out_packet, sizeof(bro_fist_t) * BUFFER_SIZE, 0);
     
     if (rc < 0)
     {
@@ -233,9 +250,12 @@ void bro_comm_sens_disp (scicos_block *block, int flag)
 {
 	switch (flag) {
 		case 1:	/* set output */
-		    bro_sens_send(block);
+		    printf("Output computation begin!\n");
+            bro_sens_send(block);
+            
 		    bro_sens_read(block);
-		    break;
+		    printf("Output computation complete! :D\n");
+            break;
 		case 2:	/* get input */
 			break;
 		case 4:	/* initialisation */

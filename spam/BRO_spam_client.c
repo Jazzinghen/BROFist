@@ -26,8 +26,12 @@ engines_t engines = {
 void ecrobot_device_initialize()
 {
     ecrobot_init_bt_slave("1234");
-    ecrobot_init_sonar_sensor(SONAR_PORT);
-    ecrobot_set_light_sensor_active(LIGHT_PORT);
+    if (CONN_SONAR) {
+        ecrobot_init_sonar_sensor(SONAR_PORT);
+    };
+    if (CONN_LIGHT) {
+        ecrobot_set_light_sensor_active(LIGHT_PORT);
+    };
 }
 
 

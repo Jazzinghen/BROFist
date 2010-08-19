@@ -18,8 +18,10 @@
  *  sonar or the light sensor. It's messy but there are some initialisation that
  *  have to be performed even BEFORE the first packet. XD
  */
- 
+
+#define CONN_SONAR      1           // Is there a Sonar?
 #define SONAR_PORT      NXT_PORT_S1 /* Simply put in here which port is            */
+#define CONN_LIGHT      1           // Is there a Light Sensor?
 #define LIGHT_PORT      NXT_PORT_S2 /* connected which sensor. OR 0 if there isn't */
                                     /* that particular sensor. :3 (You'll see why) */
                                     
@@ -28,12 +30,6 @@
 #define NOT_USING       -1          // This is the initial condition and if not
                                     // used... :3
 
-#define K               0.8F        // Constant K for PID
-#define Kp              4.117F      // Constant Kp for PID
-#define Ki              15.98F      // Constant Ki for PID
-#define Kd              1           // Constant Kd for PID
-#define P1              40          //  
-#define T               0.005F      // Speed of a single reading (In seconds)
 #define SAMP_NUM        10          // Number of Samples
 
 /* Defining Motor Variables Structure */

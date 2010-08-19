@@ -38,11 +38,19 @@ typedef struct {
     uint8_t operation;
     uint8_t port;
     float data;
-} __attribute__((__packed__)) bro_fist_t;
+}
+#ifndef DOXYGEN
+__attribute__((__packed__))
+#endif
+bro_fist_t;
 
 typedef struct {
     uint16_t size;
     bro_fist_t packets[BUFFER_SIZE];
-} __attribute__((__packed__)) bro_spam_fists_t;
+}
+#ifndef DOXYGEN
+__attribute__((__packed__))
+#endif
+bro_spam_fists_t;
 
 #endif 

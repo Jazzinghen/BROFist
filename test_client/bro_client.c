@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
         out_packet[1].port = PORT_2;
         out_packet[2].operation = TOUCH_SENSOR;
         out_packet[2].port = PORT_3;
-        out_packet[3].operation = SOUND_SENSOR;
+        out_packet[3].operation = TOUCH_SENSOR;
         out_packet[3].port = PORT_4;
         out_packet[4].operation = TACHO_COUNT;
         out_packet[4].port = MOTOR_A;
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
         out_packet[6].operation = TACHO_COUNT;
         out_packet[6].port = MOTOR_C;
 
-        /*do {
+        do {
             rc = send(sd, out_packet, sizeof(bro_fist_t) * BUFFER_SIZE, 0);
             if (rc < 0)
             {
@@ -135,9 +135,9 @@ int main(int argc, char *argv[])
                 printf("\tPort: %d\n", in_packet[i].port);
                 printf("\tData: %.2f\n\n", in_packet[i].data);
             }
-        } while (1);*/
+        } while (1);
         
-        begin_trans = time(NULL);
+        /*begin_trans = time(NULL);
     
         for (i = 0; i < MSG_NUM; i++) {
             rc = send(sd, out_packet, sizeof(bro_fist_t) * BUFFER_SIZE, 0);
@@ -163,6 +163,8 @@ int main(int argc, char *argv[])
         
         printf ("Ok, all done.\n");
         printf ("Esitimated delay: %.2fms\n", (end_trans - begin_trans + 0.0)/MSG_NUM*1000);
+        
+        */
 
         out_packet[0].operation = BRO_END_COMMUNICATION;
 

@@ -296,6 +296,17 @@ sudo apt-get install libbluetooth-dev
  *      implemented either on the \ref SPAM Client or on the BROFist Server.
  *      However, an example file for SciCos has been provided under the
  *      @c scicos folder: @c Comm_Test.cos
+ *
+ *      @section SimilOctave The understandability of the SciCosLab programming language
+ *      
+ *          You might want to browse throught the @c .sci files and this is
+ *          a comprehensible thing to do, the problem is that the
+ *          "Programming", or should I say Scripting, Language used to
+ *          interact with SciCosLab is poorly documented and almost ignored
+ *          throught all the Internet. However, feel free to use those
+ *          files to understand the language via the "Retro-Engineering".
+ *          Another great idea is to see how the provided blocks in
+ *          SciCosLab were written.
  */
 
 /** @defgroup BROCosComm BROFist SciCos Communication Blocks
@@ -346,9 +357,36 @@ sudo apt-get install libbluetooth-dev
  *      and the BROFist Server.
  */
 
-/** @defgroup BROCosMotDispatcher BROFist SciCos Motor Dispatcher
+/** @defgroup BROCosMotDispatcher BROFist SciCos Servo Motor Dispatcher
  *  @ingroup BROCosComm
  *
  *      Functions used to send and receive motor packets between
  *      SciCos and the BROFist Server.
+ */
+
+/** @defgroup BROCosEnc BROFist SciCos Fist Encoder Blocks
+ *  @ingroup BROSciCos
+ *  
+ *      Blocks for the encooding of requests.
+ *
+ *      It is simply an addon to ease the lives of the users. They are
+ *      blocks that need to be configurated correctly by entering the
+ *      wanted Operation and Port.
+ *      Since the SciCosLab language used to define how a Block works is a
+ *      kind of programming language the block itself checks if the values
+ *      used to set the BROFist are consistent. To understand more about
+ *      this please browse throught @c bro_sens_enc.sci or @c
+ *      bro_motor_enc.sci.
+ */
+
+/** @defgroup BROCosSensEnc BROFist SciCos Sensor Encoder
+ *  @ingroup BROCosEnc
+ *
+ *  Interface functions used to encode requests for any Sensor.
+ */
+
+/** @defgroup BROCosMotEnc BROFist SciCos Servo Motor Encoder
+ *  @ingroup BROCosEnc
+ *
+ *  Interface functions used to encode requests for any Servo Motor.
  */

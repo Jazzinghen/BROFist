@@ -1,3 +1,4 @@
+/** @file BRO_spam_client.h */
 #ifndef __bro_headers_spam_client_h
 #define __bro_headers_spam_client_h
 
@@ -10,6 +11,8 @@
 
 #include "../../src/headers/bro_fist.h"
 
+/** @addtogroup BROSClient */
+/* @{ */
 /*--------------------------------------------------------------------------*/
 /* Definitions                                                              */
 /*--------------------------------------------------------------------------*/
@@ -19,57 +22,94 @@
  *  have to be performed even BEFORE the first packet. XD
  */
 
-#define CONN_SONAR      1           // Is there a Sonar?
-#define SONAR_PORT      NXT_PORT_S1 /* Simply put in here which port is            */
-#define CONN_LIGHT      1           // Is there a Light Sensor?
-#define LIGHT_PORT      NXT_PORT_S2 /* connected which sensor. OR 0 if there isn't */
-                                    /* that particular sensor. :3 (You'll see why) */
-                                    
+/** Ultrasonic Distance Sensor Flag.
+ *  Set to @c 1 if connected, @c 0 if not present.
+ */
+#define CONN_SONAR      1           
+/** Ultrasonic Distance Sensor PORT.
+ *  Use the standard nxtOSEK port descriptors to tell the system which port
+ *  the Sonar is connected to.
+ */
+#define SONAR_PORT      NXT_PORT_S1
+
+/** Light Sensor Flag.
+ *  Set to @c 1 if connected, @c 0 if not present.
+ */
+#define CONN_LIGHT      1            
+/** Ultrasonic Distance Sensor PORT.
+ *  Use the standard nxtOSEK port descriptors to tell the system which port
+ *  the Sonar is connected to.
+ */
+#define LIGHT_PORT      NXT_PORT_S2 
+
 #define PID_CONTROLLED  1           //
 #define RAW_POWER       0           //
 #define NOT_USING       -1          // This is the initial condition and if not
                                     // used... :3
 
-#define SAMP_NUM        10          // Number of Samples
+/** Number of samples for Average Speed Computation. */
+#define SAMP_NUM        10
 
-/* Defining Motor Variables Structure */
+/** Servo Motor's descripting structure.
+ *
+ *  The data stored insiThde this kind of structure is used for various
+ *  purposes, such as PID Control, Average Speed computation and things
+ *  like that.
+ */
 
 typedef struct {
 
-        // Is it controlled via PID or RAW power?
+        /** Kind of Speed Control for this Servo Motor.
+         *  Please refer to the Definitions to know which values shall be
+         *  used for this variable.
+         */
         S8 speed_control_type;
 
-        // Target speed/power for motor
+        /** Target speed for PID Controller. */
         U32 speed_ref;
 
-        //  Motor's Revolutions containers
-        U32 revolutions[SAMP_NUM];  // Last SAMP_NUM tacho counts.
+        /** Last SAMP_NUM Tachometric Readings.
+         *  Used by the avg() function to compute the Average Speed for the
+         *  current Servo Motor.
+         */
+        U32 revolutions[SAMP_NUM];  
 
-        //  Motor's Times Containers
-        U32 times[SAMP_NUM];        // Last SAMP_NUM system times.
+        /** Last SAMP_NUM System Times */
+        U32 times[SAMP_NUM];        
 
-        //  Speed Readings
-        F32 speeds[SAMP_NUM];       // Last SAMP_NUM motor's speed
+        /** Last SAMP_NUM Average Speeds. */
+        F32 speeds[SAMP_NUM];
 
-        //  Motor's Powers
-        F32 powers[3];              // Last three Motor Input Powers.
+        /** Last three RAW Powers set.
+         *  Used by the PID controller or, if on RAW Power Control, only
+         *  the first value is used to set the power.
+         */
+        F32 powers[3];
 
-        //  Speed Errors
-        F32 speed_errors[3];        // Last three Speed Errors.
+        /** Last three Speed Errors.
+         *  This is the difference between the motor_t::speed_ref and the
+         *  current Average Speed. This value is needed by the PID
+         *  Controller.
+         */
+        F32 speed_errors[3];
 
-        //  Motor's Port
-        U8  port;                   // Simply the motor's power. Nothing hard. ;)
+        /** Servo Motor's Port. */
+        U8  port;
 
-        //  Miscellaneous Counters
-        U32 counter;                // Circular Array Counter
-        S32 previous_counter;       // Previous Slot in the Circular Array
+        /** Circular Array Counter for AVG Speed Computing. */
+        U32 counter;
+        /** Previous Slot in the Circular Array. */
+        S32 previous_counter;       
 
 } motor_t;
 
+/** Structure containing all the Servo Motors' Strunctures. */
 typedef struct {
     motor_t first;
     motor_t second;
     motor_t third;
 } engines_t;
+
+/* @} */
 
 #endif

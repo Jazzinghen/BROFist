@@ -383,6 +383,21 @@ sudo apt-get install libbluetooth-dev
  *  @ingroup BROCosEnc
  *
  *  Interface functions used to encode requests for any Sensor.
+ *
+ *  These simply have to be configured inside the SciCos Graphical
+ *  Interface by setting the Port and the Sensor wanted. 
+ *  The values to use for the Sensors are:
+ *      - @1 : Tachometric Counter
+ *      - @2 : Average Speed
+ *      - @3 : Light Sensor
+ *      - @4 : Touch Sensor
+ *      - @5 : Sound Sensor
+ *      - @6 : Ultrasonic Distance Sensor
+ *
+ *  While the Port values are @1 to @4 for the four Sensors' Ports, and
+ *  from @5 to @7 for the Motors' Ports.
+ *  The block itself has a system to check if the user input the values is
+ *  a coherent way.
  */
 
 /** @defgroup BROCosMotEnc BROFist SciCos Servo Motor Encoder

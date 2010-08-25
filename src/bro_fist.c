@@ -41,7 +41,8 @@ main (int argc, char *argv[])
             printf("\tDati settati: %.2f\n\n", out_packet[i].data);
         }
         
-    } while (in_packet[0].operation != BRO_END_COMMUNICATION || comm_res < 0);
+    } while ((in_packet[0].operation != BRO_END_COMMUNICATION) && (comm_res
+    >= 0));
     
     bro_bt_close_connection(bro_spam_socket);
     

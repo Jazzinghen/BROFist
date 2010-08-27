@@ -124,7 +124,9 @@ decode_bro_input (const bro_fist_t * input_packet, bro_fist_t * output_packet, e
                 break;
             };
             break;
-        
+        default:
+            //Nothing HERE
+            break;
     };
 }
 

@@ -7,16 +7,6 @@
 #include <unistd.h>
 #include <assert.h>
 
-/*static inline
-int double_to_int (double val)
-{
-    union {
-        double __from;
-        int __to;
-    } 
-
-}*/
-
 // BAD BAD STUFF
 #include <stdarg.h>
 FILE * output;
@@ -47,6 +37,9 @@ void __attribute__((destructor)) shutdown_shit ()
 
 #include "../src/headers/bro_fist.h"
 
+int sensor_count = 0;
+int motor_count = 0;
+
 void bro_encode_sci_datablock (bro_fist_t *data_block, double const * params)
 {
     switch ((uint8_t)params[2])
@@ -73,8 +66,6 @@ void bro_encode_sci_datablock (bro_fist_t *data_block, double const * params)
             data_block->port = MOTOR_C;
             break;
         default:
-            log_shit("Got bad data: %i [double: %f]\n", (uint8_t)params[2],
-            params[2]);
             break;
     };
     
@@ -105,12 +96,44 @@ void bro_encode_sci_datablock (bro_fist_t *data_block, double const * params)
             data_block->operation = SET_SPEED;
             break;
         default:
-            log_shit("Got bad data: %i [double: %f]\n", (uint8_t)params[1],
-            params[1]);
             break;
     };
     
-    data_block->data = (float)params[3];
+}
+
+void bro_encode_sci_servo (bro_fist_t *data_block, double const * params)
+{
+    switch ((uint8_t)params[1])
+    {
+        case 1:
+            data_block->port = MOTOR_A;
+            break;
+        case 2:
+            data_block->port = MOTOR_B;
+            break;
+        case 3:
+            data_block->port = MOTOR_C;
+            break;
+        default:
+            break;
+    };
+    
+    switch ((uint8_t)params[0])
+    {
+        case 1:
+            data_block->operation = SET_POWER;
+            break;
+        case 2:
+            data_block->operation = SET_SPEED;
+            break;
+        default:
+            break;
+    };
+
+    data_block->data = params[2];
+    
+    //log_shit("Set Packet. Port %i, Operation %i, Data %.2f\n",
+    //data_block->port, data_block->operation, data_block->data);
 }
 
 void bro_decode_sci_datablock (bro_fist_t const * data_block, double * param)
@@ -189,17 +212,32 @@ int bro_comm_kill (scicos_block *block)
 {
     int rc;
     bro_fist_t packet[BUFFER_SIZE];
+    memset(packet, 0, sizeof(bro_fist_t)*BUFFER_SIZE);
 
     packet[0].operation = BRO_END_COMMUNICATION;
-    
+   
+    log_shit("Allora, guarda, io ho settato il pacchetto così:\n");
+    log_shit("Operazione: %i, Porta: %i, Dati: %.2f\n", packet[0].operation,
+    packet[0].port, packet[0].data);
+
     rc = send((int)block->outptr[0][0], &packet, sizeof(bro_fist_t) * BUFFER_SIZE, 0);
     
+    log_shit("Sent END COMMUNICATION order.\n");
+
     if (rc < 0)
     {
         perror("send() failed");
         return -1;
     }
     
+    rc = recv((int)block->outptr[0][0], &packet, sizeof(bro_fist_t) * BUFFER_SIZE, 0);
+    //log_shit("%d bytes of data were received\n", rc);
+    if (rc < 0)
+    {
+        perror("recv() failed");
+        return -1;
+    }
+ 
     close((int)block->outptr[0][0]);
     
     return 0;
@@ -221,7 +259,8 @@ void bro_comm_controller (scicos_block *block, int flag)
 	        log_shit("Closing Communications. Socked Descriptor: %i "
                    "[%p]\n", (int)block->outptr[0][0], &block->outptr[0][0]);
 			bro_comm_kill(block);
-			break;
+			log_shit("Communications Closed! :D\n");
+            break;
 	    default:
 	        break;
 	}
@@ -231,32 +270,15 @@ int bro_sens_send (scicos_block *block)
 {
     int rc, i;
     bro_fist_t out_packet[BUFFER_SIZE];
-    
+    memset(out_packet, 0, sizeof(bro_fist_t)*BUFFER_SIZE);
+
     for (i = 1; i < block->nin; i++) {
         bro_encode_sci_datablock(&out_packet[i-1], block->inptr[i]);
     };
     
-    log_shit ("Data for first block: %i, %i, %.2f\n", out_packet[0].port,
-    out_packet[0].operation, out_packet[0].data);
+    //log_shit ("Data for first block: %i, %i, %.2f\n", out_packet[0].port,
+    //out_packet[0].operation, out_packet[0].data);
     
-
-    /*
-        out_packet[0].operation = RADAR_SENSOR;
-        out_packet[0].port = PORT_1;
-        out_packet[1].operation = LIGHT_SENSOR;
-        out_packet[1].port = PORT_2;
-        out_packet[2].operation = TOUCH_SENSOR;
-        out_packet[2].port = PORT_3;
-        out_packet[3].operation = TOUCH_SENSOR;
-        out_packet[3].port = PORT_4;
-        out_packet[4].operation = TACHO_COUNT;
-        out_packet[4].port = MOTOR_A;
-        out_packet[5].operation = TACHO_COUNT;
-        out_packet[5].port = MOTOR_B;
-        out_packet[6].operation = TACHO_COUNT;
-        out_packet[6].port = MOTOR_C;
-    */
-
     rc = send((int)block->inptr[0][0], out_packet, sizeof(bro_fist_t) * BUFFER_SIZE, 0);
     
     if (rc < 0)
@@ -273,7 +295,8 @@ int bro_sens_read (scicos_block *block)
 {
     int rc, i;
     bro_fist_t packet[BUFFER_SIZE];
-    
+    memset(packet, 0, sizeof(bro_fist_t)*BUFFER_SIZE);
+
     rc = recv((int)block->inptr[0][0], packet, sizeof(bro_fist_t) * BUFFER_SIZE, 0);
     //log_shit("%d bytes of data were received\n", rc);
     if (rc < 0)
@@ -298,11 +321,14 @@ void bro_comm_sens_disp (scicos_block *block, int flag)
 {
 	switch (flag) {
 		case 1:	/* set output */
-		    log_shit("Output computation begin!\n");
+		    //log_shit("Output computation begin!\n");
+            sensor_count++;
+            log_shit("Called bro_comm_sens_disp the %ith time\n",
+            sensor_count);
             bro_sens_send(block);
             
 		    bro_sens_read(block);
-		    log_shit("Output computation complete! :D\n");
+		    //log_shit("Output computation complete! :D\n");
             break;
 		case 2:	/* get input */
 			break;
@@ -317,16 +343,53 @@ void bro_comm_sens_disp (scicos_block *block, int flag)
 
 int bro_motor_set (scicos_block *block)
 {
+    int rc, i;
+    bro_fist_t out_packet[BUFFER_SIZE];
+    bro_fist_t packet[BUFFER_SIZE];
+    
+    memset(out_packet, 0, sizeof(bro_fist_t)*BUFFER_SIZE);
+    memset(packet, 0, sizeof(bro_fist_t)*BUFFER_SIZE);
+
+    for (i = 1; i < block->nin; i++) {
+        bro_encode_sci_servo(&out_packet[i-1], block->inptr[i]);
+    };
+    
+    //log_shit ("Data for first block: %i, %i, %.2f\n", out_packet[0].port,
+    //out_packet[0].operation, out_packet[0].data);
+    
+    rc = send((int)block->inptr[0][0], out_packet, sizeof(bro_fist_t) * BUFFER_SIZE, 0);
+    
+    if (rc < 0)
+    {
+        perror("send() failed");
+        return -1;
+    }
+
+    rc = recv((int)block->inptr[0][0], packet, sizeof(bro_fist_t) * BUFFER_SIZE, 0);
+    //log_shit("%d bytes of data were received\n", rc);
+    if (rc < 0)
+    {
+        perror("recv() failed");
+        return -1;
+    }
+
+
+    //log_shit("%d bytes of data were sent\n", rc);
     return 0;
+
+return 0;
 }
 
 void bro_comm_motor_disp (scicos_block *block, int flag)
 {
 	switch (flag) {
 		case 1:	/* set output */
-		    break;
+		    motor_count++;
+            log_shit("Called bro_comm_motor_disp the %ith time.\n",
+            motor_count);
+            bro_motor_set(block);
+            break;
 		case 2:	/* get input */
-		    bro_motor_set(block);
 			break;
 		case 4:	/* initialisation */
 	        break;

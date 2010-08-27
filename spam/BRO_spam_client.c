@@ -14,11 +14,19 @@ DeclareTask(PID_Controller);
 DeclareTask(Speed_Updater);
 DeclareTask(DisplayTask);
 
-engines_t engines = {
-    {.port = NXT_PORT_A, .speed_control_type = NOT_USING, .speed_ref = 0},
-    {.port = NXT_PORT_B, .speed_control_type = NOT_USING, .speed_ref = 0},
-    {.port = NXT_PORT_C, .speed_control_type = NOT_USING, .speed_ref = 0}
+engines_t engines;
+
+#if 0
+engines_t spam_motor_start() {
+    engines_t ret = {
+        {.port = NXT_PORT_A, .speed_control_type = NOT_USING, .speed_ref = 0},
+        {.port = NXT_PORT_B, .speed_control_type = NOT_USING, .speed_ref = 0},
+        {.port = NXT_PORT_C, .speed_control_type = NOT_USING, .speed_ref = 0}
+    };
+    
+    return ret;
 };
+#endif
 
 /*--------------------------------------------------------------------------*/
 /* LEJOS OSEK hooks                                                         */
@@ -26,6 +34,21 @@ engines_t engines = {
 void ecrobot_device_initialize()
 {
     ecrobot_init_bt_slave("1234");
+    
+    memset(&engines, 0, sizeof(engines_t));
+
+    engines.first.port = NXT_PORT_A;
+    engines.first.speed_control_type = NOT_USING;
+    engines.first.speed_ref = 0;
+
+    engines.second.port = NXT_PORT_B;
+    engines.second.speed_control_type = NOT_USING;
+    engines.second.speed_ref = 0;
+
+    engines.third.port = NXT_PORT_C;
+    engines.third.speed_control_type = NOT_USING;
+    engines.third.speed_ref = 0;
+
     if (CONN_SONAR) {
         ecrobot_init_sonar_sensor(SONAR_PORT);
     };
@@ -37,12 +60,17 @@ void ecrobot_device_initialize()
 
 void ecrobot_device_terminate()
 {
+  
+    memset(&engines, 0, sizeof(engines_t));
+
     nxt_motor_set_speed(NXT_PORT_A, 0, 1);
     nxt_motor_set_speed(NXT_PORT_B, 0, 1);
     nxt_motor_set_speed(NXT_PORT_C, 0, 1);
         
     ecrobot_set_light_sensor_inactive(LIGHT_PORT);
     ecrobot_term_sonar_sensor(SONAR_PORT);
+
+    bt_reset();
 
     ecrobot_term_bt_connection();
 }

@@ -12,34 +12,18 @@ function [x,y,typ] = SPAM_Motor(job,arg1,arg2)
             printf("INIT Sensor: %s, port: %s\n", graphics.exprs(1), graphics.exprs(2));
             select evstr(graphics.exprs(1))
                 case 1 then
-                    sensor = 'Tacho Count'
+                    sensor = 'RAW Power'
                 case 2 then
-                    sensor = 'AVG Speed'
-                case 3 then
-                    sensor = 'Light Sensor'
-                case 4 then
-                    sensor = 'Touch Sensor'
-                case 5 then
-                    sensor = 'Sound Sensor'
-                case 6 then
-                    sensor = 'Ultrasonic Sensor'
+                    sensor = 'Degree Per Second'
                 else
                     sensor = '?'
             end
             select evstr(graphics.exprs(2))
                 case 1 then
-                    port_no = '1'
-                case 2 then
-                    port_no = '2'
-                case 3 then
-                    port_no = '3'
-                case 4 then
-                    port_no = '4'
-                case 5 then
                     port_no = 'A'
-                case 6 then
+                case 2 then
                     port_no = 'B'
-                case 7 then
+                case 3 then
                     port_no = 'C'
                 else
                     port_no = '?'
@@ -58,7 +42,7 @@ function [x,y,typ] = SPAM_Motor(job,arg1,arg2)
             model = arg1.model;
             while %t do
                 [ok,sensor_typ,port,exprs]=getvalue('Set Sensors Parameters',..
-                    ['Sensor Type (1~6)';'Port (1~4 for Sensors Port, 5~7 for A->C)'],..
+                    ['Data Type (1 for RAW Power, 2 for DegPS)';'Port (1~3 for A->C)'],..
                     list('vec',1,'vec',1),exprs)
                 if ~ok then
                     break
@@ -66,15 +50,8 @@ function [x,y,typ] = SPAM_Motor(job,arg1,arg2)
                 sensor_typ = int(sensor_typ);
                 port = int(port);
                 printf("Sensor: %d, port: %d\n", sensor_typ, port);
-                if (((sensor_typ < 1) | (sensor_typ > 6)) | ((port < 1) | (port > 7)) ) then
-                    printf("Numero sensore NON ok\n");
-                    message('Sensor Type can only be a number between 1 and 6');
-                elseif (((sensor_typ >= 3) & (sensor_typ <= 6)) & ((port < 1) | (port > 4))) then 
-                    printf("Sensore settato sulla porta sbagliata\n");
-                    message ('Port number should be 1 to 4 for sensors');
-                elseif (((port < 5) | (port > 7)) & ((sensor_typ == 1) | (sensor_typ == 2))) then
-                    printf("Sensore di motore settato sulle porte 1~4!\n");
-                    message ('Port number should be 5 to 7 for motor ports A to C');
+                if (((sensor_typ < 1) | (sensor_typ > 2)) | ((port < 1) | (port > 3)) ) then
+                    message('Wrong data! Data Type should be either 1 or 2 and port should be a number between 1 and 3');
                 else
                     printf("Post if: %d, port: %d\n", sensor_typ, port);
                     graphics.exprs = exprs; 
@@ -87,13 +64,15 @@ function [x,y,typ] = SPAM_Motor(job,arg1,arg2)
             end
         case 'define' then
             sensor_typ = 1;
-            port = 5;
+            port = 1;
             model=scicos_model()
-            model.sim=list('bro_sensor_enc',4)
+            model.sim=list('bro_motor_enc',4)
             model.out = [3];
             model.out2 = [1];
             model.outtyp = [1];
-            model.in=[]
+            model.in =    [1];
+            model.in2 =   [1];
+            model.intyp = [1];
             model.evtin=[]
             model.rpar=[]
             model.ipar = [sensor_typ; port];

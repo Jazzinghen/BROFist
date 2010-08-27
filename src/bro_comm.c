@@ -121,8 +121,12 @@ int bro_server_fist (const bro_fist_t * input_fist, bro_fist_t * out_fist,
         return -1;
     }
     
-    //  We are now sending the data to the SPAM and then receive the results...
-    bro_bt_client_fist (input_fist, out_fist, spam_sock);
+    if (input_fist[0].operation != BRO_END_COMMUNICATION) {
+        //  We are now sending the data to the SPAM and then receive the results...
+        bro_bt_client_fist (input_fist, out_fist, spam_sock);
+    } else {
+        printf("Received END COMMUNICATION packet!\n");   
+    };
 
     //  Send the data back to the client with the results
     rc = send(scicos_sock, out_fist, sizeof(bro_fist_t) * BUFFER_SIZE, 0);

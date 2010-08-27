@@ -11,7 +11,7 @@ main (int argc, char *argv[])
     bro_fist_t in_packet[BUFFER_SIZE];
     bro_fist_t out_packet[BUFFER_SIZE];
     
-    int i, comm_res;
+    int i, comm_res, packet_no;
     
     bro_opts_t options;
     
@@ -29,10 +29,16 @@ main (int argc, char *argv[])
     
     bro_start_server (&bro_server_socket, &bro_client_socket);
     
+    packet_no = 0;
+
     do {
         // TODO: Fare il loop di comunicazione con, magari, una word per il blocco
         comm_res = bro_server_fist(in_packet, out_packet, bro_client_socket, bro_spam_socket);
         
+        packet_no++;
+
+        printf("Pacchetto numero: %i\n", packet_no);
+
         for (i = 0; i < BUFFER_SIZE; i++) {
             printf("Istruzione %i:\n", i+1);
             printf("\tOperazione: %i\n", in_packet[i].operation);
@@ -40,10 +46,12 @@ main (int argc, char *argv[])
             printf("\tDati: %.2f\n", in_packet[i].data);
             printf("\tDati settati: %.2f\n\n", out_packet[i].data);
         }
-        
+
     } while ((in_packet[0].operation != BRO_END_COMMUNICATION) && (comm_res
     >= 0));
     
+    printf("Exited communication loop after %i packets!\n", packet_no);
+
     bro_bt_close_connection(bro_spam_socket);
     
     bro_stop_server(bro_server_socket, bro_client_socket);

@@ -38,8 +38,8 @@ static const char help [] =
 "        Specify MAC address of the NXT Brick to connect to\n\n"
 "  --list-devices | -l\n"
 "        Print a List of BT Devices in range\n\n"
-"  --select-device | -s\n"
-"        Print a List of BT Devices in range and connect to one of them\n\n"
+"  --select-device={BlueTooth Name} | -s {BlueTooth Name}\n"
+"        Connect to the BlueTooth device that has the given name\n\n"
 "  --help  | -h\n"
 "        Print this help\n";
 
